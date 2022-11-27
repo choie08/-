@@ -9,8 +9,22 @@ mp_drawing.DrawingSpec
 
 cap = cv2.VideoCapture(0)
 
-counter = 0
 stage = None
+squat_cnt = 0
+
+
+def calculateAngle(a, b, c):
+    a = np.array(a)  # First
+    b = np.array(b)  # Mid
+    c = np.array(c)  # End
+
+    radians = np.arctan2(c[1] - b[1], c[0] - b[0]) - np.arctan2(a[1] - b[1], a[0] - b[0])
+    angle = np.abs(radians * 180.0 / np.pi)
+
+    if angle > 180.0:
+        angle = 360 - angle
+
+    return angle
 
 with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
     while cap.isOpened():
@@ -36,22 +50,8 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
             ankle = [landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x,
                      landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].y]
 
-
-            def calculate_angle(a, b, c):
-                a = np.array(a)  # First
-                b = np.array(b)  # Mid
-                c = np.array(c)  # End
-
-                radians = np.arctan2(c[1] - b[1], c[0] - b[0]) - np.arctan2(a[1] - b[1], a[0] - b[0])
-                angle = np.abs(radians * 180.0 / np.pi)
-
-                if angle > 180.0:
-                    angle = 360 - angle
-
-                return angle
-
             # 앵글 계산
-            angle = calculate_angle(hip, knee, ankle)
+            angle = calculateAngle(hip, knee, ankle)
 
             cv2.putText(image, str(angle),
                         tuple(np.multiply(knee, [640, 480]).astype(int)),
@@ -61,13 +61,16 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
             # 카운트 로직
             if angle > 170:
                 stage = "SQUAT_UP"
-            if angle < 130 and stage == 'SQUAT_UP':
+            elif 130 < angle <= 170 and stage == 'SQUAT_UP':
+                stage = "DOWNING"
+            elif 90 < angle <= 130 and stage == "DOWNING":
                 stage = "SQUAT_DOWN"
-                counter += 1
-                print(counter)
-                if counter == 10 :
-                  ##app.run()
-                    break
+                if squat_cnt == 10:
+                    squat_cnt = 0
+                    stage = None
+                else:
+                    squat_cnt = squat_cnt + 1
+                    stage = None
 
 
         except:
@@ -79,7 +82,7 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
                     cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),2,cv2.LINE_AA)
         cv2.putText(image, "COUNT : ", (10, 60),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-        cv2.putText(image, str(counter),
+        cv2.putText(image, str(squat_cnt),
                     (150, 60),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
@@ -95,7 +98,7 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
                                   mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2)
                                   )
 
-        cv2.imshow('Mediapipe Feed', image)
+        cv2.imshow('Squat Counter', image)
 
         if cv2.waitKey(10) & 0xFF == ord('q'):
             break
