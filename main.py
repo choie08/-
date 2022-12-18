@@ -10,13 +10,12 @@ def button(mouse, width, height, height_pos, text, text_x):
     screen.blit(text, (width / 2 - text_x, height - height_pos + 10))
 
 pygame.init()
+pygame.display.set_caption("OMOK")
 
 screen_size = (960, 720)
 screen = pygame.display.set_mode(screen_size)
 width = screen.get_width()
 height = screen.get_height()
-
-pygame.display.set_caption("OMOK")
 
 color = (255, 255, 255)
 color_light = (170, 170, 170)
@@ -26,12 +25,15 @@ quit_text = smallfont.render('QUIT', True, color)
 start_text = smallfont.render('START', True, color)
 mediapipe_text = smallfont.render('MEDIAPIPE', True, color)
 
+test = True
+
 while True:
 
     screen.fill((60, 25, 60))
     mouse = pygame.mouse.get_pos()
     button(mouse, width, height, 310, quit_text, 30)
-    button(mouse, width, height, 360, mediapipe_text, 68)
+    if test == True:
+        button(mouse, width, height, 360, mediapipe_text, 68)
     button(mouse, width, height, 410, start_text, 40)
 
     for ev in pygame.event.get():
@@ -42,6 +44,6 @@ while True:
         if ev.type == pygame.MOUSEBUTTONDOWN:
 
             if width / 2 -70 <= mouse[0] <= width / 2 + 70 and height - 310 <= mouse[1] <= height - 310 + 40:
-                pygame.quit()
+                test = -test
 
     pygame.display.update()

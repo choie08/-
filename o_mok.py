@@ -37,6 +37,12 @@ for i in range(board_height):
         row.append(NO_DOL)
     board.append(row)
 
+def resetBoard():
+    board.clear()
+
+
+
+
 
 def printBoard():
     for row in board:
