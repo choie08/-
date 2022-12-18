@@ -160,10 +160,10 @@ while running:
 										  mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2)
 										  )
 
-				cv2.imshow('Squat Counter', image)
+				img_resize = cv2.resize(image, dsize=(500,500), interpolation=cv2.INTER_AREA)
 
-				if cv2.waitKey(10) & 0xFF == ord('q'):
-					break
+				cv2.imshow('Squat Counter', img_resize)
+
 				if squat_cnt >= 1:
 					for e in pygame.event.get():
 						if e.type == QUIT:
