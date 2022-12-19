@@ -132,7 +132,7 @@ while running:
                         stage = "SQUAT_UP"
                     elif 130 < angle <= 170 and stage == 'SQUAT_UP':
                         stage = "DOWNING"
-                    elif 90 < angle <= 130 and stage == "DOWNING":
+                    elif 90 < angle <= 100 and stage == "DOWNING":
                         stage = "SQUAT_DOWN"
                         if squat_cnt == 10:
                             squat_cnt = 0
@@ -187,7 +187,7 @@ while running:
                             print(strings)
                             x = int(strings[0])
                             y = int(strings[1])
-                            if x < 19 or y < 19:
+                            if x > 19 or y > 19:
                                 isVoice = False
                                 break
                             if board[x][y] == NO_DOL:
