@@ -20,12 +20,6 @@
   
   - Install dependencies
   ```
-  pip install mediapipe
-  pip install pygame
-  pip install numpy
-  pip install opencv-python
-  pip install opencv-contrib-python
-  pip install speechrecognition
-  pip install pyaudio
+  pip install -r requirements.txt
   ```
   
