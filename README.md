@@ -22,5 +22,10 @@
   ```
   pip install mediapipe
   pip install pygame
+  pip install numpy
+  pip install opencv-python
+  pip install opencv-contrib-python
+  pip install speechrecognition
+  pip install pyaudio
   ```
   
