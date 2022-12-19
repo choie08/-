@@ -3,6 +3,12 @@ import cv2
 import mediapipe as mp
 import numpy as np
 
+import speech_recognition as sr
+
+r = sr.Recognizer()
+
+isVoice = True
+
 #mediapipe 초기 설정
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
@@ -166,7 +172,38 @@ while running:
                 if cv2.waitKey(10) & 0xFF == ord('q'):
                     break
 
-                if squat_cnt >= 1:
+                if isVoice and squat_cnt >= 1:
+                    with sr.Microphone() as source:
+
+                        print('Speak Anything : ')
+                        audio = r.listen(source)
+
+                        try:
+                            text = r.recognize_google(audio)
+                            print('You said : {}'.format(text))
+                            split_text = text.format(text)
+                            print(split_text)
+                            strings = split_text.split(', ')
+                            print(strings)
+                            x = int(strings[0])
+                            y = int(strings[1])
+                            if x < 19 or y < 19:
+                                isVoice = False
+                                break
+                            if board[x][y] == NO_DOL:
+                                board[x][y] = BLACK_DOL if black_turn else WHITE_DOL
+                                dols_order.append((x, y, board[x][y]))
+                                printBoard()
+                                squat_cnt = 0
+                                if checkOmok(x, y, black_turn):
+                                    win = board[x][y]
+                                    print(win)
+                                black_turn = not black_turn
+
+                        except:
+                            isVoice = False
+                            print('Sorry could not recognize your voice')
+                elif isVoice == False and squat_cnt >= 1:
                     for e in pygame.event.get():
                         if e.type == QUIT:
                             running = False
@@ -182,10 +219,13 @@ while running:
                                         dols_order.append((i_new, j_new, board[i_new][j_new]))
                                         printBoard()
                                         squat_cnt = 0
+                                        isVoice = True
                                         if checkOmok(i_new, j_new, black_turn):
                                             win = board[i_new][j_new]
                                             print(win)
                                         black_turn = not black_turn
+
+
                 SURFACE.fill(YELLOW)
                 draw_board(SURFACE)
                 draw_dols_order(SURFACE, 0, len(dols_order))
