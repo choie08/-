@@ -132,7 +132,7 @@ while running:
                         stage = "SQUAT_UP"
                     elif 130 < angle <= 170 and stage == 'SQUAT_UP':
                         stage = "DOWNING"
-                    elif 90 < angle <= 100 and stage == "DOWNING":
+                    elif angle <= 110 and stage == "DOWNING":
                         stage = "SQUAT_DOWN"
                         if squat_cnt == 10:
                             squat_cnt = 0
